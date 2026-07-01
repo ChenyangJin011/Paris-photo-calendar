@@ -255,6 +255,12 @@ h2 {
   margin-bottom: 1rem;
 }
 
+.sync-note {
+  margin: 0.45rem 0 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
 .day-events-section {
   margin-bottom: 1rem;
 }

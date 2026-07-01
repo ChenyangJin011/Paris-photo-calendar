@@ -1,11 +1,12 @@
 const STORAGE_KEY = "parisPortraitCalendarEvents";
+const SHARED_SCHEDULE_PATH = "schedule.json";
 const weekdayNames = ["一", "二", "三", "四", "五", "六", "日"];
 
 const state = {
   currentDate: new Date(),
   selectedDateKey: getDateKey(new Date()),
   selectedEventIndex: null,
-  events: normalizeEventMap(loadEvents()),
+  events: {},
 };
 
 const monthTitle = document.getElementById("monthTitle");
@@ -22,8 +23,10 @@ const endTimeInput = document.getElementById("endTimeInput");
 const statusInput = document.getElementById("statusInput");
 const deleteButton = document.getElementById("deleteButton");
 const newEventButton = document.getElementById("newEventButton");
+const exportSharedButton = document.getElementById("exportSharedButton");
 const exportButton = document.getElementById("exportButton");
 const importInput = document.getElementById("importInput");
+const syncNote = document.getElementById("syncNote");
 
 document.getElementById("prevMonth").addEventListener("click", () => {
   state.currentDate = new Date(state.currentDate.getFullYear(), state.currentDate.getMonth() - 1, 1);
@@ -128,6 +131,18 @@ exportButton.addEventListener("click", () => {
   URL.revokeObjectURL(url);
 });
 
+exportSharedButton.addEventListener("click", () => {
+  const data = JSON.stringify(state.events, null, 2);
+  const blob = new Blob([data], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = "schedule.json";
+  link.click();
+  URL.revokeObjectURL(url);
+});
+
 importInput.addEventListener("change", async (event) => {
   const [file] = event.target.files || [];
   if (!file) {
@@ -170,6 +185,7 @@ function loadEvents() {
 
 function persistEvents() {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state.events));
+  updateSyncNote("你当前看到的是本地最新版本。导出共享日程后上传到 GitHub，合作者就能看到更新。");
 }
 
 function isValidImportedValue(value) {
@@ -429,7 +445,37 @@ function createEventId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-renderWeekdays();
-populateForm(state.selectedDateKey, null);
-renderCalendar();
-renderDayEventsList();
+function updateSyncNote(text) {
+  syncNote.textContent = text;
+}
+
+async function initializeCalendar() {
+  const localEvents = normalizeEventMap(loadEvents());
+
+  try {
+    const response = await fetch(`${SHARED_SCHEDULE_PATH}?t=${Date.now()}`, { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error("shared schedule unavailable");
+    }
+
+    const sharedValue = await response.json();
+    const sharedEvents = normalizeEventMap(sharedValue);
+    state.events = Object.keys(localEvents).length > 0 ? localEvents : sharedEvents;
+
+    if (Object.keys(localEvents).length > 0) {
+      updateSyncNote("已载入本地修改版本。若要让合作者看到更新，请导出共享日程并上传新的 schedule.json。");
+    } else {
+      updateSyncNote("当前显示的是共享日程。你修改后需要导出共享日程并上传新的 schedule.json。");
+    }
+  } catch {
+    state.events = localEvents;
+    updateSyncNote("暂时没有读取到共享日程，当前显示的是本地版本。");
+  }
+
+  renderWeekdays();
+  populateForm(state.selectedDateKey, null);
+  renderCalendar();
+  renderDayEventsList();
+}
+
+initializeCalendar();

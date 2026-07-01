@@ -28,7 +28,8 @@
         </p>
       </div>
       <div class="hero-actions">
-        <button id="exportButton" class="button button-primary" type="button">导出日程</button>
+        <button id="exportSharedButton" class="button button-primary" type="button">导出共享日程</button>
+        <button id="exportButton" class="button button-secondary" type="button">导出本地备份</button>
         <label class="button button-secondary" for="importInput">导入日程</label>
         <input id="importInput" type="file" accept="application/json" hidden>
       </div>
@@ -53,6 +54,7 @@
         <div class="panel-header">
           <p class="eyebrow">选中日期</p>
           <h2 id="selectedDateTitle">请选择日期</h2>
+          <p id="syncNote" class="sync-note">正在读取共享日程…</p>
         </div>
 
         <section class="day-events-section">
