@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="description"
+    content="一帧巴黎｜巴黎人像日历 - 面向合作伙伴查看的摄影预约日历。"
+  >
+  <title>一帧巴黎｜巴黎人像日历</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  >
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">巴黎摄影档期</p>
+        <h1>一帧巴黎｜巴黎人像日历</h1>
+        <p class="hero-text">
+          用于查看巴黎摄影预约、不可约时间和休息日。<br>
+          如果客户希望获得拍摄地点推荐，可根据人数查看你的当天安排与空档。
+        </p>
+      </div>
+      <div class="hero-actions">
+        <button id="exportButton" class="button button-primary" type="button">导出日程</button>
+        <label class="button button-secondary" for="importInput">导入日程</label>
+        <input id="importInput" type="file" accept="application/json" hidden>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="calendar-card">
+        <div class="calendar-toolbar">
+          <button id="prevMonth" class="icon-button" type="button" aria-label="上个月">&lt;</button>
+          <div class="month-heading">
+            <p class="month-label">月视图</p>
+            <h2 id="monthTitle"></h2>
+          </div>
+          <button id="nextMonth" class="icon-button" type="button" aria-label="下个月">&gt;</button>
+        </div>
+
+        <div class="calendar-grid weekday-row" id="weekdayRow"></div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+      </section>
+
+      <aside class="panel-card">
+        <div class="panel-header">
+          <p class="eyebrow">选中日期</p>
+          <h2 id="selectedDateTitle">请选择日期</h2>
+        </div>
+
+        <section class="day-events-section">
+          <div class="day-events-header">
+            <p class="eyebrow">当天行程</p>
+            <button id="newEventButton" class="button button-secondary small-button" type="button">新增一条</button>
+          </div>
+          <div id="dayEventsList" class="day-events-list"></div>
+        </section>
+
+        <form id="eventForm" class="event-form">
+          <input type="hidden" id="eventDate">
+          <input type="hidden" id="eventIndex">
+
+          <label>
+            <span>标题</span>
+            <input id="titleInput" name="title" type="text" placeholder="例如：清晨塞纳河拍摄" required>
+          </label>
+
+          <div class="time-row">
+            <label>
+              <span>开始时间</span>
+              <input id="startTimeInput" name="startTime" type="time" required>
+            </label>
+
+            <label>
+              <span>结束时间</span>
+              <input id="endTimeInput" name="endTime" type="time" required>
+            </label>
+          </div>
+
+          <label>
+            <span>状态</span>
+            <select id="statusInput" name="status">
+              <option value="booked">已预约</option>
+              <option value="unavailable">不可约</option>
+              <option value="rest day">休息日</option>
+            </select>
+          </label>
+
+          <div class="form-actions">
+            <button class="button button-primary" type="submit">保存日程</button>
+            <button id="deleteButton" class="button button-secondary" type="button">删除当前这条</button>
+          </div>
+        </form>
+
+        <div class="legend">
+          <div class="legend-item">
+            <span class="legend-dot status-booked"></span>
+            <span>已预约</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot status-unavailable"></span>
+            <span>不可约</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot status-rest"></span>
+            <span>休息日</span>
+          </div>
+        </div>
+
+      </aside>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
